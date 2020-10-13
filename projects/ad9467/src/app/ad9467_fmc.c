@@ -58,7 +58,6 @@
 #include "ad9517.h"
 #include "parameters.h"
 
-#define IIO_SUPPORT
 #ifdef IIO_SUPPORT
 #include "app_iio.h"
 #endif

@@ -44,9 +44,9 @@
 #include "error.h"
 #include "uart.h"
 #include "uart_extra.h"
-#include "iio_app.h"
 #include "parameters.h"
 #include "app_iio.h"
+#include "iio.h"
 #ifndef PLATFORM_MB
 #include "irq.h"
 #include "irq_extra.h"
@@ -55,7 +55,6 @@
 /******************************************************************************/
 /************************ Variables Definitions *******************************/
 /******************************************************************************/
-static struct uart_desc *uart_desc;
 #ifndef PLATFORM_MB
 static struct irq_ctrl_desc *irq_desc;
 #endif
@@ -98,25 +97,13 @@ int32_t iio_app_start(struct iio_axi_adc_init_param *adc_init)
 		.device_id = UART_DEVICE_ID,
 		.extra = &xil_uart_init_par,
 	};
-	struct iio_server_ops uart_iio_server_ops = {
-		.read = iio_server_read,
-		.write = iio_server_write,
-	};
-	struct iio_app_init_param iio_app_init_par = {
-		.iio_server_ops = &uart_iio_server_ops,
-	};
-	struct iio_app_desc *iio_app_desc;
 	struct iio_axi_adc_desc *iio_axi_adc_desc;
 	struct iio_device *dev_desc;
 	struct iio_desc *iio;
-	struct iio_init_param iio_init = {
+	struct iio_init_param iio_init_par = {
 		.phy_type = USE_UART,
 		.uart_init_param = &uart_init_par
 	};
-
-	status = uart_init(&uart_desc, &uart_init_par);
-	if (status < 0)
-		return status;
 
 #ifndef PLATFORM_MB
 	status = irq_global_enable(irq_desc);
@@ -130,7 +117,7 @@ int32_t iio_app_start(struct iio_axi_adc_init_param *adc_init)
 
 	iio_axi_adc_get_dev_descriptor(iio_axi_adc_desc, &dev_desc);
 
-	status = iio_init(&iio, &iio_init);
+	status = iio_init(&iio, &iio_init_par);
 	if (status < 0)
 		return status;
 
